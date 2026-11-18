@@ -167,7 +167,7 @@ le altre squadre possono vedere il nostro codice.
 ## 8. Consegna
 
 Il file pronto da caricare è **`submission/rotating_forks_agent.zip`** (contiene solo
-`rotating_forks_agent/agent.py`, 4 KB). Lo abbiamo già verificato come farebbe il portale:
+`rotating_forks_agent/agent.py`, 6 KB). Lo abbiamo già verificato come farebbe il portale:
 compila, si carica da una cartella separata e gioca senza errori.
 
 Paracadute: se per qualche motivo il portale lo rifiuta, caricare la cartella
