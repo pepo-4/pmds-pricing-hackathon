@@ -1,0 +1,4 @@
+name: profit_max
+# pure profit: no weight on revenue or volume whatever the scoring says
+w_revenue: 0.0
+w_units: 0.0

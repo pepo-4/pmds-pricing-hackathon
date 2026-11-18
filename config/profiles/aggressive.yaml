@@ -1,0 +1,6 @@
+name: aggressive
+# commit more cash, favour winning auctions, hold more cover
+cash_reserve_frac: 0.0
+max_spend_frac: 0.90
+win_bias: 1.6
+coverage_rounds: 2.0

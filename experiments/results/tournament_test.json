@@ -1,0 +1,15 @@
+{
+  "split": "test",
+  "games": 300,
+  "start": 0,
+  "candidates": [
+    "v1_rule",
+    "v2_opt",
+    "v3_bayes",
+    "v4_bandit",
+    "v5_rl",
+    "v6_hybrid",
+    "v7_meta"
+  ],
+  "seconds": 467.5364215373993
+}

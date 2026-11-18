@@ -1,0 +1,8 @@
+name: conservative
+# keep more cash, bid less, explore less
+cash_reserve_frac: 0.20
+max_spend_frac: 0.50
+value_haircut: 0.10
+ts_scale: 0.2
+win_bias: 0.9
+coverage_rounds: 1.0

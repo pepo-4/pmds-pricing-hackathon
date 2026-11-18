@@ -1,0 +1,5 @@
+name: market_share
+# value every unit sold at half its price on top of profit; drop the margin floor
+w_units: 0.5
+min_margin: 0.0
+band_under: 0.35
