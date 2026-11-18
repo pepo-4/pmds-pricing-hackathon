@@ -1,4 +1,4 @@
-"""pepo_agent: adaptive price-ladder agent for the Dynamic Market Exchange.
+"""rotating_forks_agent: adaptive price-ladder agent for the Dynamic Market Exchange.
 
 Each turn:
   1. read last turn's own sales and auction fills;
@@ -25,7 +25,7 @@ from dme_simulator.config import GoodsConfig
 # field (README starter agents + stronger proxies), see SOLUZIONE_IT.md.
 DEFAULTS = {
     # pricing
-    "init_markup": 8.0,          # first anchor = material cost x this
+    "init_markup": 10.0,         # first anchor = material cost x this (early monopoly: price high)
     "explore_turns": 0,          # turns using the wide ladder (off: probes do it)
     "explore_ladder": (0.45, 0.65, 0.9, 1.25, 1.75, 2.5),
     "ladder": (1.0, 0.9, 1.12, 0.8, 1.25, 1.4),   # listing order = fill priority
@@ -45,8 +45,8 @@ DEFAULTS = {
     # stock
     "stock_mode": "rate",        # "rate" (shelf follows sales) or "ramp" (old)
     "base_stock": 2,             # rate mode: shelf = base + cover_turns x sales rate
-    "cover_turns": 3.0,
-    "start_stock": 6,            # shelf before the first sale
+    "cover_turns": 5.0,
+    "start_stock": 10,           # shelf before the first sale (be ready for early customers)
     "ramp": 0.5,                 # extra shelf units per unit ever sold
     "target_min": 14,            # shelf size once the good sells
     "target_cover": 2.0,         # plus this many turns of recent sales
@@ -54,18 +54,28 @@ DEFAULTS = {
     "rate_alpha": 0.3,
     # auction
     "bid_premium": 0.1,          # bid reserve x (1 + premium)
-    "start_premium": 1.0,        # turn 1: bid 2x reserve (materials are scarcest early)
+    "start_premium": 2.0,        # turn 1: bid 3x reserve (materials are scarcest early)
     "premium_up": 0.5,           # raise the premium when we were outbid
     "premium_decay": 0.6,
     "premium_cap": 3.0,
     "budget_frac": 0.5,          # never commit more than this share of cash
+    # reading the rivals (public inventories, lots, full log when visible)
+    "crowd_aware": True,         # use rivals' shelves for pricing and production
+    "mono_up": 1.12,             # price step up when no rival holds the good
+    "crowd_weight": 0.15,        # production priority / (1 + w x rival sellers)
+    "rival_sales_aware": True,   # rivals sell, we don't -> cut harder
+    "rival_down": 0.85,
+    "lot_aware": True,           # supplier stock growing -> bid at the reserve
+    "slack_premium": 0.01,
+    "use_market_log": True,      # observe_all_transactions on: use rivals' prices
+    "sellout_up": 1.0,           # all listed units sold -> price x this (1 = off)
     # end game: from this turn on, stop restocking and cut prices
     "endgame_turn": 0,           # 0 = off (the horizon is unknown)
     "endgame_cut": 0.9,
 }
 
 
-class PepoAgent(BaseAgent):
+class RotatingForksAgent(BaseAgent):
     """Price ladder + stock targets + adaptive auction premium."""
 
     def __init__(self, **params):
@@ -81,6 +91,12 @@ class PepoAgent(BaseAgent):
         self.mat_price: dict[str, float] = {}
         self.streak: dict[str, int] = {}
         self.floor_mult: dict[str, float] = {}
+        self.prev_public: dict[str, dict[str, int]] = {}
+        self.prev_mine: dict[str, int] = {}
+        self.prev_lot: dict[str, int] = {}
+        self.me: str | None = None
+        self.my_list_prices: set[float] = set()
+        self.my_bid_prices: set[float] = set()
         self.total_sold: dict[str, int] = {}
 
     # ------------------------------------------------------------------
@@ -107,14 +123,24 @@ class PepoAgent(BaseAgent):
         cost = {g: max(1.0, self._recipe_cost(r)) for g, r in recipe_for.items()}
 
         # --- 1. feedback from last turn ---------------------------------
-        sold: dict[str, list[float]] = {}
-        for tx in state.sales_transactions[self.n_sales:]:
-            sold.setdefault(tx.good, []).extend([tx.price] * tx.quantity)
+        # Scenarios may set observe_all_transactions: then these logs hold
+        # EVERY team's trades. Keep ours apart and use the rest as market data.
+        new_sales = state.sales_transactions[self.n_sales:]
+        new_buys = state.auction_transactions[self.n_buys:]
         self.n_sales = len(state.sales_transactions)
-        won: dict[str, int] = {}
-        for tx in state.auction_transactions[self.n_buys:]:
-            won[tx.good] = won.get(tx.good, 0) + tx.quantity
         self.n_buys = len(state.auction_transactions)
+        self._identify(state, new_sales, new_buys)
+        sold: dict[str, list[float]] = {}
+        rival_prices: dict[str, list[float]] = {}
+        for tx in new_sales:
+            if self._is_mine(tx.seller, tx.price, self.my_list_prices):
+                sold.setdefault(tx.good, []).extend([tx.price] * tx.quantity)
+            else:
+                rival_prices.setdefault(tx.good, []).extend([tx.price] * tx.quantity)
+        won: dict[str, int] = {}
+        for tx in new_buys:
+            if self._is_mine(tx.buyer, tx.price, self.my_bid_prices):
+                won[tx.good] = won.get(tx.good, 0) + tx.quantity
 
         for good in goods_config.finished_goods:
             units = sold.get(good, [])
@@ -122,6 +148,29 @@ class PepoAgent(BaseAgent):
                 "rate_alpha"
             ] * len(units)
             self.total_sold[good] = self.total_sold.get(good, 0) + len(units)
+
+        # --- 1b. read the rivals (public inventories) ----------------------
+        # rival_stock: finished units other teams hold (their shelf, roughly)
+        # rival_holders: how many other teams hold the good (competing offers)
+        # rival_sold: units that left other teams' shelves since last turn
+        finished = goods_config.finished_goods
+        mine = state.inventory
+        rival_stock, rival_holders, rival_sold = {}, {}, {}
+        for good in finished:
+            total = holders = drop = 0
+            for team, held in state.public_inventories.items():
+                q = held.get(good, 0)
+                total += q
+                holders += q > 0
+                before = self.prev_public.get(team, {}).get(good, 0)
+                drop += max(0, before - q)
+            my_q = mine.get(good, 0)
+            my_drop = max(0, self.prev_mine.get(good, 0) - my_q)
+            rival_stock[good] = max(0, total - my_q)
+            rival_holders[good] = max(0, holders - (my_q > 0))
+            rival_sold[good] = max(0, drop - my_drop, len(rival_prices.get(good, [])))
+        self.prev_public = {t: dict(h) for t, h in state.public_inventories.items()}
+        self.prev_mine = dict(mine)
 
         # --- 2. prices ----------------------------------------------------
         for good in goods_config.finished_goods:
@@ -164,14 +213,26 @@ class PepoAgent(BaseAgent):
                     self.anchor[good] = max(units) * p["explore_keep"]
                 else:
                     self.anchor[good] = ref * p["explore_down"]
+            elif len(units) >= len(listed) and p["sellout_up"] > 1.0:
+                # everything we showed was bought: demand exceeds our supply,
+                # we are underpriced -> climb fast
+                self.anchor[good] = ref * p["sellout_up"]
             elif any(price >= ref * 0.999 for price in units):
-                self.anchor[good] = ref * p["up"]
+                monopoly = p["crowd_aware"] and rival_stock.get(good, 0) == 0
+                self.anchor[good] = ref * (p["mono_up"] if monopoly else p["up"])
             elif units:
                 self.anchor[good] = ref * p["hold_down"]
+            elif p["rival_sales_aware"] and rival_sold.get(good, 0) > 0:
+                # customers are buying this good, just not from us: we are dear
+                self.anchor[good] = ref * p["rival_down"]
             else:
                 # cut faster the longer nothing sells
                 extra = max(0, self.streak[good] - p["streak_free"])
                 self.anchor[good] = ref * p["down"] * p["streak_down"] ** extra
+            if p["use_market_log"] and not units and rival_prices.get(good):
+                # full market log visible: rivals sold this good and we did not,
+                # so go straight to the highest price that actually sold
+                self.anchor[good] = min(self.anchor[good], max(rival_prices[good]))
             self.anchor[good] = max(floor, self.anchor[good])
 
         # --- 3. stock targets ---------------------------------------------
@@ -198,7 +259,11 @@ class PepoAgent(BaseAgent):
         def value(good: str) -> float:
             r = recipe_for[good]
             used = sum(r.inputs.values()) or 1
-            return (self.anchor.get(good, 0.0) - cost[good]) / used
+            v = (self.anchor.get(good, 0.0) - cost[good]) / used
+            if p["crowd_aware"]:
+                # scarce materials go first to goods with fewer rival sellers
+                v /= 1.0 + p["crowd_weight"] * rival_holders.get(good, 0)
+            return v
 
         order = sorted(recipe_for, key=value, reverse=True)
         need = {g: max(0, target[g] - inv.get(g, 0)) for g in order}
@@ -213,7 +278,13 @@ class PepoAgent(BaseAgent):
                 prem = min(p["premium_cap"], prem + p["premium_up"])
             else:
                 prem = p["bid_premium"] + (prem - p["bid_premium"]) * p["premium_decay"]
+                # supplier stock is piling up: demand < supply, so every bid at
+                # the reserve gets filled -> stop overpaying
+                prev = self.prev_lot.get(good)
+                if p["lot_aware"] and prev is not None and lots[good].quantity > prev:
+                    prem = min(prem, p["slack_premium"])
             self.premium[good] = prem
+            self.prev_lot[good] = lots[good].quantity
 
         material_need: dict[str, int] = {}
         for good in order:
@@ -270,9 +341,39 @@ class PepoAgent(BaseAgent):
             self.last_listed[good] = prices
             self.last_anchor[good] = anchor
 
+        self.my_list_prices = {round(float(x.price), 6) for x in listings}
+        self.my_bid_prices = {round(float(b.price_per_unit), 6) for b in bids}
         return Decision(bids=bids, assembly=assembly, listings=listings)
 
     # ------------------------------------------------------------------
+    def _identify(self, state: Observation, new_sales, new_buys) -> None:
+        """Find our team id: the only team with our exact capital and inventory,
+        or, among identical teams, the one trading at our (distinctive) prices."""
+        if self.me is not None:
+            return
+        cands = [
+            team for team, cap in state.public_capital.items()
+            if abs(cap - state.capital) < 1e-6
+            and state.public_inventories.get(team, {}) == state.inventory
+        ]
+        if len(cands) == 1:
+            self.me = cands[0]
+            return
+        for tx in new_sales:
+            if tx.seller in cands and _price_in(tx.price, self.my_list_prices):
+                self.me = tx.seller
+                return
+        for tx in new_buys:
+            if tx.buyer in cands and _price_in(tx.price, self.my_bid_prices):
+                self.me = tx.buyer
+                return
+
+    def _is_mine(self, team: str, price: float, my_prices) -> bool:
+        if self.me is not None:
+            return team == self.me
+        # not identified yet: our trades are the ones at our own prices
+        return _price_in(price, my_prices)
+
     def _recipe_cost(self, recipe) -> float:
         return sum(self.mat_price.get(m, 0.0) * q for m, q in recipe.inputs.items())
 
@@ -285,6 +386,10 @@ class PepoAgent(BaseAgent):
             if current is None or self._recipe_cost(recipe) < self._recipe_cost(current):
                 best[recipe.output_good] = recipe
         return best
+
+
+def _price_in(price: float, prices) -> bool:
+    return round(float(price), 6) in prices
 
 
 class _Named:

@@ -1,10 +1,10 @@
 {
  "rotating_forks": [
-  "pepo_agent",
+  "rotating_forks_agent",
   {}
  ],
  "pepo": [
-  "pepo_baseline",
+  "rotating_forks_baseline",
   {}
  ],
  "6767": [
@@ -88,7 +88,7 @@
   {}
  ],
  "proxy_rnd": [
-  "pepo_agent",
+  "rotating_forks_agent",
   {
    "start_premium": 1.0,
    "init_markup": 6.0,
@@ -96,13 +96,13 @@
   }
  ],
  "proxy_vibe": [
-  "pepo_agent",
+  "rotating_forks_agent",
   {
    "split_listings": false
   }
  ],
  "proxy_trucco": [
-  "pepo_agent",
+  "rotating_forks_agent",
   {
    "init_markup": 3.0,
    "bid_premium": 0.5,

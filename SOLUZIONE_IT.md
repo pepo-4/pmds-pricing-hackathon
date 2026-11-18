@@ -63,7 +63,7 @@ quelli che hanno meno soldi.
 
 Abbiamo già un progetto (`bizagent`) scritto prima di conoscere le regole. Ora
 che le regole sono note, costruiamo un agente **su misura** per questo gioco
-(`pepo_agent`), riusando le idee migliori di `bizagent`.
+(`rotating_forks_agent`), riusando le idee migliori di `bizagent`.
 
 Ogni turno l'agente fa così:
 
@@ -97,7 +97,7 @@ Ogni turno l'agente fa così:
 magazzino "in anticipo" (lo abbiamo provato: rischia di perdere vendite). Il
 costo dei pezzi avanzati è piccolo rispetto ai guadagni.
 
-Come **paracadute** c'è anche un agente semplice (`pepo_baseline`).
+Come **paracadute** c'è anche un agente semplice (`rotating_forks_baseline`).
 
 ## 5. Come lo verifichiamo
 
@@ -137,7 +137,7 @@ uv run python tools/league.py --roster crowded --seeds 10
 
 | Agente | Posizione media | Vittorie | Cassa media |
 |---|---|---|---|
-| **pepo_agent** | **1,00** | **120 / 120** | 140.973 |
+| **rotating_forks_agent** | **1,00** | **120 / 120** | 140.973 |
 | DummyAgent | 2,04 | 0 | 18.644 |
 | PatientAgent | 3,33 | 0 | 14.250 |
 | PriceWarAgent | 3,62 | 0 | 11.911 |
@@ -146,10 +146,10 @@ uv run python tools/league.py --roster crowded --seeds 10
 
 | Agente | Posizione media | Vittorie | Cassa media |
 |---|---|---|---|
-| **pepo_agent** (finale) | **1,07** | **112 / 120** | 60.500 |
+| **rotating_forks_agent** (finale) | **1,07** | **112 / 120** | 60.500 |
 | pepo_v1 (prima versione) | 2,29 | 7 | 28.563 |
 | pepo_single (senza offerte separate) | 2,89 | 1 | 25.092 |
-| pepo_baseline / copia | ~4,6 | 0 | ~14.700 |
+| rotating_forks_baseline / copia | ~4,6 | 0 | ~14.700 |
 | DummyAgent | 5,78 | 0 | 12.499 |
 | PriceWarAgent (×2) | ~7,3 | 0 | ~10.600 |
 
@@ -166,20 +166,20 @@ le altre squadre possono vedere il nostro codice.
 
 ## 8. Consegna
 
-Il file pronto da caricare è **`submission/pepo_agent.zip`** (contiene solo
-`pepo_agent/agent.py`, 4 KB). Lo abbiamo già verificato come farebbe il portale:
+Il file pronto da caricare è **`submission/rotating_forks_agent.zip`** (contiene solo
+`rotating_forks_agent/agent.py`, 4 KB). Lo abbiamo già verificato come farebbe il portale:
 compila, si carica da una cartella separata e gioca senza errori.
 
 Paracadute: se per qualche motivo il portale lo rifiuta, caricare la cartella
-`src/dme_simulator/agents/pepo_baseline/`.
+`src/dme_simulator/agents/rotating_forks_baseline/`.
 
 ## 9. Dove sta cosa
 
 | Percorso | Cosa contiene |
 |---|---|
-| `src/dme_simulator/agents/pepo_agent/` | **Il nostro agente** (quello da consegnare) |
-| `src/dme_simulator/agents/pepo_baseline/` | Agente semplice di riserva |
-| `submission/pepo_agent.zip` | File pronto da caricare sul portale |
+| `src/dme_simulator/agents/rotating_forks_agent/` | **Il nostro agente** (quello da consegnare) |
+| `src/dme_simulator/agents/rotating_forks_baseline/` | Agente semplice di riserva |
+| `submission/rotating_forks_agent.zip` | File pronto da caricare sul portale |
 | `tools/` | Test: `league.py` (classifica), `evolve.py` (ricerca parametri), `scenarios/` (mercati di prova), `results/` |
 | `legacy/bizagent/` | Il vecchio progetto scritto prima di conoscere le regole. **Non serve per la gara**, lo teniamo solo come riferimento |
 | tutto il resto | Il simulatore ufficiale degli organizzatori (da non modificare) |
@@ -227,3 +227,56 @@ Punto ancora debole: partite corte (15 turni) in un mercato affollato.
 Per rifare i test servono anche gli agenti delle altre squadre (non li
 copiamo nel nostro repo): si scaricano dalle loro fork e si passano con
 `--extra-dirs <cartella>`.
+
+## 11. Versione 3 — attaccare all'inizio e leggere gli avversari
+
+L'agente ora si chiama **`rotating_forks_agent`** (file da caricare:
+`submission/rotating_forks_agent.zip`).
+
+**Cosa ci hanno insegnato i grafici della gara.** Il primo in classifica guadagna
+quasi tutto nei **primi 5 turni** e poi resta fermo. Nei primi turni i materiali
+scarseggiano e quasi nessuno ha LAPTOP o CONSOLE: chi li ha subito, a prezzi
+alti, prende tutti i clienti "premium" (che pagano un LAPTOP fino a 1.400).
+Noi eravamo troppo **passivi** proprio lì.
+
+**Cosa abbiamo cambiato:**
+
+| Cosa | Prima (v2) | Ora (v3) |
+|---|---|---|
+| Offerta all'asta al turno 1 | 2× il prezzo minimo | **3×** il prezzo minimo |
+| Pezzi pronti prima di vendere | 6 per prodotto | **10** per prodotto |
+| Prezzo di partenza | 8× il costo | **10×** il costo (approfittiamo del monopolio iniziale) |
+| Scaffale dopo le prime vendite | 2 + 3 turni di vendite | 2 + **5** turni di vendite |
+
+**Lettura degli avversari** (regole che si vedono solo leggendo il codice):
+
+- **Magazzini di tutti visibili** (`public_inventories`): per ogni prodotto
+  contiamo quanti concorrenti lo hanno. Se **nessuno** lo ha, siamo in monopolio
+  e alziamo il prezzo più in fretta. I materiali scarsi vanno prima ai prodotti
+  con meno concorrenti.
+- **Vendite degli altri**: quando il magazzino di un concorrente cala, ha
+  venduto. Se gli altri vendono un prodotto e noi no, siamo troppo cari:
+  scendiamo più in fretta.
+- **Lotti dell'asta**: se il magazzino del fornitore cresce, c'è più offerta che
+  domanda: offriamo il prezzo minimo senza pagare extra.
+- **Regola nascosta `observe_all_transactions`**: uno scenario segreto può
+  mostrare a tutti **tutte** le transazioni (con prezzi e venditori). Un agente
+  che conta tutte le vendite come proprie (come faceva il nostro, e
+  probabilmente molti altri) si confonde. Ora l'agente **capisce qual è la sua
+  squadra** (cassa e magazzino uguali ai suoi, o prezzi identici ai suoi) e usa
+  le vendite degli altri come informazione: se loro vendono e noi no, va subito
+  al prezzo più alto a cui il mercato sta comprando.
+
+**Risultati su semi nuovi** (posizione media, 9 mercati × 12 partite):
+
+| Campo | v3 | v2 |
+|---|---|---|
+| Campo "duro" (24 squadre) | **2,99** (78 vittorie su 108) | 4,45 (36 vittorie) |
+| Campo come la prima classifica | **1,34** (82 vittorie su 108) | 1,71 (45 vittorie) |
+| Contro i 3 bot ufficiali (14 mercati) | **1,00** (112/112) | 1,00 |
+
+Punti ancora deboli nel campo duro: materiali costosi (posizione ~9) e clienti
+poveri (~6,5).
+
+**Cosa abbiamo provato e scartato:** fermarsi a un turno fisso per "tenersi il
+guadagno" (peggiora: nei nostri test continuare a vendere conviene ancora).

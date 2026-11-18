@@ -49,7 +49,7 @@ def main():
     jobs, keys = [], []
     for name, params in variants.items():
         roster = {t: (b, dict(k)) for t, (b, k) in field.items()}
-        roster[ME] = ("pepo_agent", {**roster[ME][1], **params})
+        roster[ME] = ("rotating_forks_agent", {**roster[ME][1], **params})
         for c in args.configs:
             for s in range(args.seeds):
                 jobs.append((str(ROOT / c), args.seed0 + s, roster, None, args.extra_dirs))

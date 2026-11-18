@@ -1,91 +1,105 @@
 
-== default.yaml (10 games)
+== default.yaml (8 games)
 team               avg rank  wins  mean capital  min capital
-pepo_agent             1.00    10       145,201      131,418
-DummyAgent             2.00     0        19,099       17,624
-PatientAgent           3.10     0        12,000       12,000
-PriceWarAgent          3.90     0         9,656        7,828
+rotating_forks_agent     1.00     8       136,405      127,956
+DummyAgent             2.00     0        18,928       18,151
+PatientAgent           3.00     0        12,000       12,000
+PriceWarAgent          4.00     0         8,954        7,596
 
-== scaled_market.yaml (10 games)
+== scaled_market.yaml (8 games)
 team               avg rank  wins  mean capital  min capital
-pepo_agent             1.00    10       524,389      506,115
-DummyAgent             2.00     0        66,363       66,259
-PriceWarAgent          3.00     0        62,428       61,199
+rotating_forks_agent     1.00     8       570,526      534,296
+PriceWarAgent          2.38     0        68,758       61,778
+DummyAgent             2.62     0        65,923       65,547
 PatientAgent           4.00     0        60,000       60,000
 
-== tutorial_pricing.yaml (10 games)
+== tutorial_pricing.yaml (8 games)
 team               avg rank  wins  mean capital  min capital
-pepo_agent             1.00    10        25,737       25,446
+rotating_forks_agent     1.00     8        29,993       29,349
 DummyAgent             2.00     0         5,151        5,151
-PriceWarAgent          3.00     0         5,091        5,084
+PriceWarAgent          3.00     0         5,088        5,080
 PatientAgent           4.00     0         5,000        5,000
 
-== tutorial_auction.yaml (10 games)
+== tutorial_auction.yaml (8 games)
 team               avg rank  wins  mean capital  min capital
-pepo_agent             1.00    10        14,910       14,232
-DummyAgent             2.00     0         5,403        5,338
-PriceWarAgent          3.00     0         5,144        5,120
+rotating_forks_agent     1.00     8        16,581       16,581
+DummyAgent             2.00     0         5,208        5,208
+PriceWarAgent          3.00     0         5,158        5,158
 PatientAgent           4.00     0         5,000        5,000
 
-== beta_high.yaml (10 games)
+== beta_high.yaml (8 games)
 team               avg rank  wins  mean capital  min capital
-pepo_agent             1.00    10       113,525      103,227
-DummyAgent             2.00     0        19,491       18,459
-PatientAgent           3.20     0        12,000       12,000
-PriceWarAgent          3.80     0        10,187        7,983
-
-== beta_low.yaml (10 games)
-team               avg rank  wins  mean capital  min capital
-pepo_agent             1.00    10       167,491      150,971
-DummyAgent             2.00     0        18,717       17,040
-PatientAgent           3.10     0        12,000       12,000
-PriceWarAgent          3.90     0         9,283        7,337
-
-== capacity.yaml (10 games)
-team               avg rank  wins  mean capital  min capital
-pepo_agent             1.00    10        69,583       61,147
-DummyAgent             2.00     0        19,728       19,538
-PriceWarAgent          3.30     0        12,695       11,231
-PatientAgent           3.70     0        12,000       12,000
-
-== cheap_wtp.yaml (10 games)
-team               avg rank  wins  mean capital  min capital
-pepo_agent             1.00    10        59,748       54,555
-DummyAgent             2.00     0        18,137       16,749
+rotating_forks_agent     1.00     8       111,984      102,735
+DummyAgent             2.00     0        19,134       17,807
 PatientAgent           3.00     0        12,000       12,000
-PriceWarAgent          4.00     0         7,521        6,831
+PriceWarAgent          4.00     0         9,742        8,229
 
-== costly.yaml (10 games)
+== beta_low.yaml (8 games)
 team               avg rank  wins  mean capital  min capital
-pepo_agent             1.00    10        87,342       80,372
-DummyAgent             2.00     0        19,402       16,163
-PatientAgent           3.10     0         5,000        5,000
-PriceWarAgent          3.90     0         1,451          222
-
-== long.yaml (10 games)
-team               avg rank  wins  mean capital  min capital
-pepo_agent             1.00    10       282,878      259,940
-DummyAgent             2.00     0        27,359       24,406
+rotating_forks_agent     1.00     8       181,146      168,570
+DummyAgent             2.00     0        18,136       16,684
 PatientAgent           3.00     0        12,000       12,000
-PriceWarAgent          4.00     0         1,866          398
+PriceWarAgent          4.00     0         7,920        6,965
 
-== scarce.yaml (10 games)
+== capacity.yaml (8 games)
 team               avg rank  wins  mean capital  min capital
-pepo_agent             1.00    10       108,073       91,237
-DummyAgent             2.00     0        12,969       12,530
-PatientAgent           3.30     0        12,000       12,000
-PriceWarAgent          3.70     0        11,480       10,575
+rotating_forks_agent     1.00     8        75,625       67,240
+DummyAgent             2.00     0        19,655       19,597
+PatientAgent           3.25     0        12,000       12,000
+PriceWarAgent          3.75     0        11,950       10,804
 
-== short.yaml (10 games)
+== cheap_wtp.yaml (8 games)
 team               avg rank  wins  mean capital  min capital
-pepo_agent             1.00    10        68,288       56,244
-DummyAgent             2.00     0        14,229       13,681
-PriceWarAgent          3.00     0        13,029       12,599
+rotating_forks_agent     1.00     8        58,283       53,681
+DummyAgent             2.00     0        17,644       16,308
+PatientAgent           3.00     0        12,000       12,000
+PriceWarAgent          4.00     0         7,931        7,410
+
+== costly.yaml (8 games)
+team               avg rank  wins  mean capital  min capital
+rotating_forks_agent     1.00     8        87,934       81,653
+DummyAgent             2.00     0        13,828       10,735
+PatientAgent           3.00     0         5,000        5,000
+PriceWarAgent          4.00     0         1,161          225
+
+== long.yaml (8 games)
+team               avg rank  wins  mean capital  min capital
+rotating_forks_agent     1.00     8       269,858      257,350
+DummyAgent             2.00     0        26,726       25,111
+PatientAgent           3.00     0        12,000       12,000
+PriceWarAgent          4.00     0           836          203
+
+== scarce.yaml (8 games)
+team               avg rank  wins  mean capital  min capital
+rotating_forks_agent     1.00     8        97,549       75,883
+DummyAgent             2.00     0        13,800       12,910
+PatientAgent           3.25     0        12,000       12,000
+PriceWarAgent          3.75     0        11,291       10,483
+
+== short.yaml (8 games)
+team               avg rank  wins  mean capital  min capital
+rotating_forks_agent     1.00     8        68,109       61,341
+DummyAgent             2.00     0        14,163       13,515
+PriceWarAgent          3.00     0        12,583       12,022
 PatientAgent           4.00     0        12,000       12,000
 
-== ALL (120 games)
+== observe_all.yaml (8 games)
 team               avg rank  wins  mean capital  min capital
-pepo_agent             1.00   120       138,930       14,232
-DummyAgent             2.00     0        20,504        5,151
-PatientAgent           3.46     0        14,250        5,000
-PriceWarAgent          3.54     0        12,486          222
+rotating_forks_agent     1.00     8       128,100      117,212
+DummyAgent             2.00     0        14,386       12,880
+PatientAgent           3.00     0        12,000       12,000
+PriceWarAgent          4.00     0         5,262        3,746
+
+== beta_05.yaml (8 games)
+team               avg rank  wins  mean capital  min capital
+rotating_forks_agent     1.00     8        97,743       81,689
+DummyAgent             2.00     0        18,818       17,948
+PatientAgent           3.25     0        12,000       12,000
+PriceWarAgent          3.75     0        10,242        8,409
+
+== ALL (112 games)
+team               avg rank  wins  mean capital  min capital
+rotating_forks_agent     1.00   112       137,845       16,581
+DummyAgent             2.04     0        19,393        5,151
+PatientAgent           3.34     0        13,929        5,000
+PriceWarAgent          3.62     0        11,920          203

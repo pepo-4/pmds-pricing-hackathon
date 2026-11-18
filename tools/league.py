@@ -24,7 +24,7 @@ from dme_simulator.runner import run_simulation  # noqa: E402
 AGENTS_DIR = ROOT / "src" / "dme_simulator" / "agents"
 OPPONENTS_DIR = ROOT / "tools" / "opponents"
 
-# first version of pepo_agent, kept as a rival
+# first version of rotating_forks_agent, kept as a rival
 V1 = {"init_markup": 5.0, "explore_turns": 3, "up": 1.10, "hold_down": 0.97, "down": 0.85,
       "min_markup": 1.25, "floor_patience": 999, "probes": [], "streak_free": 1,
       "streak_down": 0.92, "ramp": 1.0, "target_min": 3, "bid_premium": 0.02}
@@ -32,18 +32,18 @@ V1 = {"init_markup": 5.0, "explore_turns": 3, "up": 1.10, "hold_down": 0.97, "do
 # team_id -> (bundle id, constructor kwargs)
 ROSTERS = {
     "official": {
-        "pepo_agent": ("pepo_agent", {}),
+        "rotating_forks_agent": ("rotating_forks_agent", {}),
         "DummyAgent": ("DummyAgent", {}),
         "PatientAgent": ("PatientAgent", {}),
         "PriceWarAgent": ("PriceWarAgent", {}),
     },
     # a busier market: several strong-ish rivals
     "crowded": {
-        "pepo_agent": ("pepo_agent", {}),
-        "pepo_baseline": ("pepo_baseline", {}),
-        "pepo_v1": ("pepo_agent", V1),
-        "pepo_single": ("pepo_agent", {"split_listings": False}),
-        "rival_c": ("pepo_baseline", {}),
+        "rotating_forks_agent": ("rotating_forks_agent", {}),
+        "rotating_forks_baseline": ("rotating_forks_baseline", {}),
+        "pepo_v1": ("rotating_forks_agent", V1),
+        "pepo_single": ("rotating_forks_agent", {"split_listings": False}),
+        "rival_c": ("rotating_forks_baseline", {}),
         "DummyAgent": ("DummyAgent", {}),
         "PriceWarAgent": ("PriceWarAgent", {}),
         "PriceWarAgent2": ("PriceWarAgent", {}),

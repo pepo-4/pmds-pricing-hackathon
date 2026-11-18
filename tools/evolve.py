@@ -1,4 +1,4 @@
-"""Small evolutionary search over pepo_agent parameters.
+"""Small evolutionary search over rotating_forks_agent parameters.
 
 Each generation: 8 candidates play together (plus fixed rivals) on both market
 scenarios across seeds; the best 3 by average rank survive and are mutated.
@@ -41,10 +41,10 @@ SPACE = {
     ],
 }
 FIXED = {
-    "base": ("pepo_agent", {}),
-    "B_old": ("pepo_agent", {"down": 0.93, "explore_turns": 0, "target_min": 14, "init_markup": 6.0,
+    "base": ("rotating_forks_agent", {}),
+    "B_old": ("rotating_forks_agent", {"down": 0.93, "explore_turns": 0, "target_min": 14, "init_markup": 6.0,
                              "hold_down": 1.0, "bid_premium": 0.1, "streak_down": 1.0, "start_stock": 14}),
-    "pepo_baseline": ("pepo_baseline", {}),
+    "rotating_forks_baseline": ("rotating_forks_baseline", {}),
     "Dummy": ("DummyAgent", {}),
     "PW": ("PriceWarAgent", {}),
 }
@@ -69,7 +69,7 @@ def main():
                "tools/scenarios/beta_high.yaml", "config/tutorial_pricing.yaml"]
     with ProcessPoolExecutor() as pool:
         for gen in range(gens):
-            roster = {f"c{i}": ("pepo_agent", cfg) for i, cfg in enumerate(pop)}
+            roster = {f"c{i}": ("rotating_forks_agent", cfg) for i, cfg in enumerate(pop)}
             roster.update(FIXED)
             jobs = [(str(ROOT / c), 5000 + 97 * gen + s, roster, None)
                     for c in configs for s in range(seeds)]

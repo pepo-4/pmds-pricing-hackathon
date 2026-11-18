@@ -1,4 +1,4 @@
-"""pepo_baseline: simple, safe fallback agent.
+"""rotating_forks_baseline: simple, safe fallback agent.
 
 Keeps a few units of every good in stock, bids slightly above the reserve price,
 and moves each good's price up when it sells out and down when nothing sells.
@@ -21,7 +21,7 @@ START_MARKUP = 4.0
 MIN_MARKUP = 1.3
 
 
-class PepoBaseline(BaseAgent):
+class RotatingForksBaseline(BaseAgent):
     def __init__(self):
         self.price: dict[str, float] = {}
         self.listed: dict[str, int] = {}
