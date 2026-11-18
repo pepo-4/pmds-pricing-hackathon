@@ -172,3 +172,14 @@ compila, si carica da una cartella separata e gioca senza errori.
 
 Paracadute: se per qualche motivo il portale lo rifiuta, caricare la cartella
 `src/dme_simulator/agents/pepo_baseline/`.
+
+## 9. Dove sta cosa
+
+| Percorso | Cosa contiene |
+|---|---|
+| `src/dme_simulator/agents/pepo_agent/` | **Il nostro agente** (quello da consegnare) |
+| `src/dme_simulator/agents/pepo_baseline/` | Agente semplice di riserva |
+| `submission/pepo_agent.zip` | File pronto da caricare sul portale |
+| `tools/` | Test: `league.py` (classifica), `evolve.py` (ricerca parametri), `scenarios/` (mercati di prova), `results/` |
+| `legacy/bizagent/` | Il vecchio progetto scritto prima di conoscere le regole. **Non serve per la gara**, lo teniamo solo come riferimento |
+| tutto il resto | Il simulatore ufficiale degli organizzatori (da non modificare) |
