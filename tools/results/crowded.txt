@@ -1,0 +1,143 @@
+
+== default.yaml (10 games)
+team               avg rank  wins  mean capital  min capital
+pepo_agent             1.00    10        52,666       46,482
+pepo_v1                2.10     0        23,386       20,065
+pepo_single            2.90     0        19,686       18,097
+pepo_baseline          4.50     0        11,428       11,275
+rival_c                4.50     0        11,423       11,294
+DummyAgent             6.00     0         9,672        8,531
+PriceWarAgent          7.40     0         7,303        5,951
+PriceWarAgent2         7.60     0         6,966        5,653
+
+== scaled_market.yaml (10 games)
+team               avg rank  wins  mean capital  min capital
+pepo_agent             1.00    10       275,654      230,932
+pepo_single            2.40     0       136,841      111,877
+pepo_v1                2.60     0       130,745      111,721
+rival_c                4.60     0        64,564       62,374
+pepo_baseline          4.70     0        64,682       62,134
+DummyAgent             5.70     0        62,769       62,166
+PriceWarAgent2         7.40     0        60,606       59,540
+PriceWarAgent          7.60     0        60,583       59,659
+
+== tutorial_pricing.yaml (10 games)
+team               avg rank  wins  mean capital  min capital
+pepo_agent             1.00    10        19,346       17,851
+pepo_v1                2.00     0         8,247        7,328
+pepo_single            3.00     0         5,965        5,722
+pepo_baseline          4.50     0         5,390        5,268
+rival_c                4.50     0         5,368        5,220
+DummyAgent             6.00     0         5,151        5,151
+PriceWarAgent          7.40     0         5,071        5,064
+PriceWarAgent2         7.60     0         5,071        5,060
+
+== tutorial_auction.yaml (10 games)
+team               avg rank  wins  mean capital  min capital
+pepo_agent             1.00    10         9,973        9,871
+pepo_v1                2.00     0         6,096        6,096
+pepo_single            3.00     0         5,697        5,697
+pepo_baseline          4.50     0         5,279        5,279
+rival_c                4.50     0         5,279        5,279
+DummyAgent             6.00     0         5,130        5,130
+PriceWarAgent          7.50     0         5,111        5,111
+PriceWarAgent2         7.50     0         5,111        5,111
+
+== beta_high.yaml (10 games)
+team               avg rank  wins  mean capital  min capital
+pepo_agent             1.00    10        33,253       28,672
+pepo_v1                2.40     0        19,740       16,197
+pepo_single            2.60     0        17,439       15,790
+pepo_baseline          4.50     0        11,631       11,445
+rival_c                4.50     0        11,640       11,325
+DummyAgent             6.30     0         8,504        7,872
+PriceWarAgent          7.30     0         7,650        6,183
+PriceWarAgent2         7.40     0         7,663        6,823
+
+== beta_low.yaml (10 games)
+team               avg rank  wins  mean capital  min capital
+pepo_agent             1.00    10        90,279       81,980
+pepo_v1                2.20     0        23,782       20,011
+pepo_single            2.80     0        21,096       18,393
+pepo_baseline          4.50     0        11,273       11,210
+rival_c                4.50     0        11,276       11,119
+DummyAgent             6.00     0         9,726        9,061
+PriceWarAgent2         7.30     0         6,501        4,163
+PriceWarAgent          7.70     0         5,676        1,417
+
+== capacity.yaml (10 games)
+team               avg rank  wins  mean capital  min capital
+pepo_agent             1.00    10        33,481       27,736
+pepo_v1                2.20     0        21,430       19,520
+pepo_single            2.80     0        20,168       18,088
+rival_c                4.30     0        12,542       11,993
+pepo_baseline          4.70     0        12,473       11,976
+DummyAgent             6.00     0        10,374        9,219
+PriceWarAgent          7.50     0         6,990        4,585
+PriceWarAgent2         7.50     0         7,219        3,523
+
+== cheap_wtp.yaml (10 games)
+team               avg rank  wins  mean capital  min capital
+pepo_agent             1.00    10        30,873       27,710
+pepo_v1                2.00     0        19,108       15,315
+pepo_single            3.20     0        12,153       11,204
+rival_c                4.30     0        11,558       11,388
+pepo_baseline          4.50     0        11,537       11,386
+DummyAgent             6.30     0         8,043        6,881
+PriceWarAgent          7.00     0         6,596        1,852
+PriceWarAgent2         7.70     0         6,255        4,890
+
+== costly.yaml (10 games)
+team               avg rank  wins  mean capital  min capital
+pepo_v1                1.30     7        26,100       20,378
+pepo_agent             1.70     3        23,868       19,919
+pepo_baseline          3.50     0         8,734        7,161
+rival_c                3.50     0         8,456        6,606
+pepo_single            5.00     0         1,029          492
+PriceWarAgent          6.75     0           251          194
+PriceWarAgent2         6.85     0           246          230
+DummyAgent             7.40     0           136            1
+
+== long.yaml (10 games)
+team               avg rank  wins  mean capital  min capital
+pepo_agent             1.00    10        92,199       86,402
+pepo_v1                2.00     0        36,802       31,917
+pepo_single            3.00     0        21,085       19,304
+rival_c                4.40     0        12,182       11,837
+pepo_baseline          4.60     0        12,145       11,815
+DummyAgent             6.00     0         7,047        6,331
+PriceWarAgent2         7.40     0           845           80
+PriceWarAgent          7.60     0           711           79
+
+== scarce.yaml (10 games)
+team               avg rank  wins  mean capital  min capital
+pepo_agent             1.10     9        34,507       25,418
+pepo_single            1.90     1        21,418       16,226
+pepo_v1                3.30     0        13,706       10,362
+DummyAgent             3.90     0        11,741       11,613
+rival_c                4.90     0        11,266       11,091
+pepo_baseline          5.90     0        11,252       11,079
+PriceWarAgent          7.30     0        10,403        9,721
+PriceWarAgent2         7.70     0        10,259        9,371
+
+== short.yaml (10 games)
+team               avg rank  wins  mean capital  min capital
+pepo_agent             1.00    10        29,903       24,856
+pepo_single            2.10     0        18,531       16,765
+pepo_v1                3.40     0        13,616       11,193
+DummyAgent             3.80     0        11,692       11,588
+PriceWarAgent2         6.10     0        10,976        9,608
+rival_c                6.30     0        11,214       11,111
+pepo_baseline          6.60     0        11,180       11,091
+PriceWarAgent          6.70     0        10,949        9,659
+
+== ALL (120 games)
+team               avg rank  wins  mean capital  min capital
+pepo_agent             1.07   112        60,500        9,871
+pepo_v1                2.29     7        28,563        6,096
+pepo_single            2.89     1        25,092          492
+rival_c                4.57     0        14,731        5,220
+pepo_baseline          4.75     0        14,750        5,268
+DummyAgent             5.78     0        12,499            1
+PriceWarAgent          7.31     0        10,608           79
+PriceWarAgent2         7.34     0        10,643           80
