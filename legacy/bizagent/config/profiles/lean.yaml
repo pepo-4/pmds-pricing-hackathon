@@ -1,0 +1,12 @@
+name: lean
+# The three modules the ablation study could not show to help in our simulator, switched off:
+# rival-price model and band, forgetting / Thompson sampling / price variation, soft risk limits.
+# Hard feasibility checks stay on. Not evaluated on the test split.
+use_comp_prices: false
+use_opponent_model: false
+comp_band: false
+ts_scale: 0.0
+forgetting: 1.0
+dither: 0.0
+cash_reserve_frac: 0.0
+max_spend_frac: 1.0

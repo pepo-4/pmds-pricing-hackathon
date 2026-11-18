@@ -1,0 +1,49 @@
+{
+  "split": "valid",
+  "games": 100,
+  "ablations": {
+    "full": {},
+    "no_opponent_model": {
+      "use_comp_prices": false,
+      "use_opponent_model": false,
+      "comp_band": false
+    },
+    "no_bayesian_learning": {
+      "ts_scale": 0.0,
+      "forgetting": 1.0,
+      "dither": 0.0
+    },
+    "bandit_instead_of_model": {
+      "pricing_mode": "bandit"
+    },
+    "greedy_instead_of_lp": {
+      "solver": "greedy"
+    },
+    "no_safety_stock": {
+      "safety_z": 0.0
+    },
+    "no_dynamic_pricing": {
+      "pricing_mode": "fixed"
+    },
+    "no_inventory_awareness": {
+      "inventory_aware": false
+    },
+    "no_coordinated_bidding": {
+      "coordinated_bids": false
+    },
+    "no_bid_learning": {
+      "shade_mode": "fixed"
+    },
+    "no_risk_limits": {
+      "cash_reserve_frac": 0.0,
+      "max_spend_frac": 1.0,
+      "min_margin": 0.0,
+      "max_price_step_up": 0.6,
+      "max_price_step_down": 0.6,
+      "early_step": 0.6
+    },
+    "meta_strategy_on": {
+      "pricing_mode": "meta"
+    }
+  }
+}

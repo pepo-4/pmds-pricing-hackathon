@@ -1,0 +1,19 @@
+[project]
+name = "bizagent"
+version = "0.1.0"
+description = "Autonomous business agent for auction + production + dynamic pricing competitions"
+requires-python = ">=3.9"
+dependencies = ["numpy>=1.24", "scipy>=1.10", "pyyaml>=6.0"]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0"]
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["bizagent*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

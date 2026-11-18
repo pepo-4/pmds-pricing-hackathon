@@ -1,0 +1,41 @@
+{
+  "products": {
+    "P1": {
+      "name": "P1",
+      "recipe": {
+        "R1": 2.0
+      },
+      "unit_cost": 10.279089069178555,
+      "capacity_use": 1.0,
+      "price_min": 0.0,
+      "price_max": 134.05653774647936,
+      "salvage": 0.0,
+      "holding_cost": 0.25658488867544466
+    }
+  },
+  "resources": {
+    "R1": {
+      "name": "R1",
+      "auction_format": "posted",
+      "reserve_price": 7.138325171681858,
+      "ref_price": null,
+      "salvage": 0.0,
+      "holding_cost": 0.017124841090387314
+    }
+  },
+  "horizon": 12,
+  "n_firms": 4,
+  "capacity": null,
+  "lead_time": 1,
+  "initial_cash": 5855.001941827323,
+  "fixed_cost": 0.0,
+  "demand_hint": {},
+  "objective": {
+    "kind": "profit",
+    "w_profit": 1.0,
+    "w_revenue": 0.0,
+    "w_units": 0.0,
+    "w_cash": 0.0,
+    "inventory_valued": true
+  }
+}

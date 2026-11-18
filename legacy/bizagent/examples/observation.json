@@ -1,0 +1,55 @@
+{
+  "round": 6,
+  "phase": "all",
+  "cash": 10998.863137482062,
+  "raw_inventory": {
+    "R1": 115.43587219557953
+  },
+  "fin_inventory": {
+    "P1": 0.0
+  },
+  "pending_raw": {},
+  "lots": [
+    {
+      "resource": "R1",
+      "quantity": 347.3985481100755,
+      "reserve_price": 7.138325171681858,
+      "format": "posted"
+    }
+  ],
+  "last_prices": {
+    "P1": 66.65966313155728
+  },
+  "last_sales": {
+    "P1": 40.46303451119653
+  },
+  "last_offered": {
+    "P1": 40.46303451119653
+  },
+  "competitor_prices": {
+    "F1": {
+      "P1": 36.818875675165884
+    },
+    "F2": {
+      "P1": 46.4148765508621
+    },
+    "F3": {
+      "P1": 39.043625665942216
+    }
+  },
+  "auction_results": [
+    {
+      "resource": "R1",
+      "clearing_price": 7.138325171681858,
+      "won_qty": 115.43587219557953,
+      "paid": 824.0187922087554,
+      "total_sold": 174.6138852185772,
+      "supply": 265.65166548766524,
+      "all_bids": null,
+      "round": 5
+    }
+  ],
+  "extra": {
+    "rounds_left": 6
+  }
+}

@@ -1,0 +1,3 @@
+name: adaptive
+# a slow bandit switches between the demand model and the follower rule
+pricing_mode: meta

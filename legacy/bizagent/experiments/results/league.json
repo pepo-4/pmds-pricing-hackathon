@@ -1,0 +1,13 @@
+{
+  "split": "test",
+  "games": 40,
+  "names": [
+    "v1_rule",
+    "v2_opt",
+    "v3_bayes",
+    "v4_bandit",
+    "v5_rl",
+    "v6_hybrid",
+    "v7_meta"
+  ]
+}
