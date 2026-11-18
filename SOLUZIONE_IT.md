@@ -183,3 +183,47 @@ Paracadute: se per qualche motivo il portale lo rifiuta, caricare la cartella
 | `tools/` | Test: `league.py` (classifica), `evolve.py` (ricerca parametri), `scenarios/` (mercati di prova), `results/` |
 | `legacy/bizagent/` | Il vecchio progetto scritto prima di conoscere le regole. **Non serve per la gara**, lo teniamo solo come riferimento |
 | tutto il resto | Il simulatore ufficiale degli organizzatori (da non modificare) |
+
+## 10. Versione 2 (dopo la prima classifica)
+
+**Cosa abbiamo scoperto guardando la gara vera.** Nelle fork pubbliche solo 4
+squadre hanno messo il codice: quasi tutte usano l'agente di esempio del README
+(compra 1 pezzo di ogni materiale a prezzo minimo +10%, costruisce 1 PHONE,
+vende tutto a 250). I primi in classifica sono privati.
+
+Con 25 squadre la partita è molto diversa dai nostri primi test:
+
+1. **All'inizio i materiali finiscono subito.** ~20 squadre offrono il prezzo
+   minimo +10%, cioè **esattamente quanto offrivamo noi**: a parità di prezzo
+   l'asta si divide a turno e noi non compravamo quasi niente per i primi turni.
+   Dal turno ~10 i fornitori producono di più e i materiali tornano abbondanti.
+2. **Ognuno vende pochi pezzi** (i ~25 clienti per turno si dividono tra tante
+   squadre). Il nostro scaffale da 14 pezzi per prodotto faceva finire la
+   partita con decine di pezzi invenduti, che valgono zero.
+
+**Cosa abbiamo cambiato:**
+
+| Prima | Ora |
+|---|---|
+| Asta: prezzo minimo +10% dal primo turno | **Prezzo minimo ×2 al primo turno**, poi scende da solo quando i lotti diventano abbondanti (sale fino a ×4 se perdiamo) |
+| Scaffale che cresce fino a ~14 pezzi per prodotto | **Scaffale = 2 pezzi + 3 turni di vendite reali**: grande dove vendiamo, piccolo dove no |
+| Fino al 70% della cassa impegnabile in un turno | **Massimo 50%** |
+
+**Come l'abbiamo verificato.** `tools/opponents/` contiene due ricostruzioni della
+gara: `real_field.json` (come la prima classifica) e `tough_field.json` (come
+la seconda, con 5 avversari "furbi" al posto di 5 agenti di esempio). Lo script
+`tools/variants.py` cambia **solo** il nostro agente e lascia uguale il resto.
+
+Risultati su semi nuovi (posizione media, più basso è meglio, 7 mercati × 12 partite):
+
+| Campo | Versione 2 | Versione 1 (quella caricata prima) |
+|---|---|---|
+| Campo "duro" (come la gara di adesso, 24 squadre) | **6,38** | 11,07 |
+| Campo come la prima classifica (25 squadre) | **1,74** | 5,29 |
+| Contro i 3 bot ufficiali (12 mercati) | **1,00** (120/120) | 1,00 |
+
+Punto ancora debole: partite corte (15 turni) in un mercato affollato.
+
+Per rifare i test servono anche gli agenti delle altre squadre (non li
+copiamo nel nostro repo): si scaricano dalle loro fork e si passano con
+`--extra-dirs <cartella>`.

@@ -22,6 +22,7 @@ from dme_simulator.config import load_config  # noqa: E402
 from dme_simulator.runner import run_simulation  # noqa: E402
 
 AGENTS_DIR = ROOT / "src" / "dme_simulator" / "agents"
+OPPONENTS_DIR = ROOT / "tools" / "opponents"
 
 # first version of pepo_agent, kept as a rival
 V1 = {"init_markup": 5.0, "explore_turns": 3, "up": 1.10, "hold_down": 0.97, "down": 0.85,
@@ -51,8 +52,9 @@ ROSTERS = {
 
 
 def play(job):
-    config_path, seed, roster, turns = job
-    classes = discover_bundle_classes([AGENTS_DIR])
+    config_path, seed, roster, turns = job[:4]
+    extra = job[4] if len(job) > 4 else []
+    classes = discover_bundle_classes([AGENTS_DIR, OPPONENTS_DIR, *extra])
     agents = {}
     for team, (bundle, kwargs) in roster.items():
         cls = classes[bundle]
@@ -79,11 +81,13 @@ def main(argv=None):
     ap.add_argument("--seed0", type=int, default=1000)
     ap.add_argument("--turns", type=int, default=None)
     ap.add_argument("--workers", type=int, default=None)
+    ap.add_argument("--extra-dirs", nargs="*", default=[],
+                    help="more folders with agent bundles (e.g. other teams' agents)")
     args = ap.parse_args(argv)
 
     roster = json.loads(args.roster_json) if args.roster_json else ROSTERS[args.roster]
     roster = {k: tuple(v) for k, v in roster.items()}
-    jobs = [(str(ROOT / c), args.seed0 + s, roster, args.turns)
+    jobs = [(str(ROOT / c), args.seed0 + s, roster, args.turns, args.extra_dirs)
             for c in args.configs for s in range(args.seeds)]
     with ProcessPoolExecutor(max_workers=args.workers) as pool:
         results = list(pool.map(play, jobs))

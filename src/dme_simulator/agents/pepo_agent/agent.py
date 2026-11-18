@@ -21,7 +21,8 @@ from dme_simulator.agents import (
 )
 from dme_simulator.config import GoodsConfig
 
-# Tuned with tools/evolve.py and checked on 12 scenarios (see SOLUZIONE_IT.md).
+# Tuned with tools/evolve.py and tools/variants.py against a replica of the real
+# field (README starter agents + stronger proxies), see SOLUZIONE_IT.md.
 DEFAULTS = {
     # pricing
     "init_markup": 8.0,          # first anchor = material cost x this
@@ -42,7 +43,10 @@ DEFAULTS = {
     "streak_free": 0,            # no-sale turns before cuts accelerate
     "streak_down": 1.0,          # extra cut per further no-sale turn (1 = off)
     # stock
-    "start_stock": 3,            # shelf before the first sale
+    "stock_mode": "rate",        # "rate" (shelf follows sales) or "ramp" (old)
+    "base_stock": 2,             # rate mode: shelf = base + cover_turns x sales rate
+    "cover_turns": 3.0,
+    "start_stock": 6,            # shelf before the first sale
     "ramp": 0.5,                 # extra shelf units per unit ever sold
     "target_min": 14,            # shelf size once the good sells
     "target_cover": 2.0,         # plus this many turns of recent sales
@@ -50,10 +54,11 @@ DEFAULTS = {
     "rate_alpha": 0.3,
     # auction
     "bid_premium": 0.1,          # bid reserve x (1 + premium)
-    "premium_up": 0.25,          # raise the premium when we were outbid
+    "start_premium": 1.0,        # turn 1: bid 2x reserve (materials are scarcest early)
+    "premium_up": 0.5,           # raise the premium when we were outbid
     "premium_decay": 0.6,
-    "premium_cap": 2.0,
-    "budget_frac": 0.7,          # never commit more than this share of cash
+    "premium_cap": 3.0,
+    "budget_frac": 0.5,          # never commit more than this share of cash
     # end game: from this turn on, stop restocking and cut prices
     "endgame_turn": 0,           # 0 = off (the horizon is unknown)
     "endgame_cut": 0.9,
@@ -173,12 +178,19 @@ class PepoAgent(BaseAgent):
         endgame = p["endgame_turn"] and turn >= p["endgame_turn"]
         target = {}
         for good in recipe_for:
-            # grow the shelf only once the good has proven it sells
-            floor_stock = min(
-                p["target_min"],
-                p["start_stock"] + p["ramp"] * self.total_sold.get(good, 0),
-            )
-            t = floor_stock + p["target_cover"] * self.rate.get(good, 0.0)
+            if p["stock_mode"] == "rate":
+                # shelf follows what we actually sell: a small base plus
+                # a few turns of recent sales (crowded markets sell little)
+                t = p["base_stock"] + p["cover_turns"] * self.rate.get(good, 0.0)
+                if self.total_sold.get(good, 0) == 0:
+                    t = p["start_stock"]
+            else:
+                # grow the shelf only once the good has proven it sells
+                floor_stock = min(
+                    p["target_min"],
+                    p["start_stock"] + p["ramp"] * self.total_sold.get(good, 0),
+                )
+                t = floor_stock + p["target_cover"] * self.rate.get(good, 0.0)
             target[good] = 0 if endgame else int(min(p["target_max"], round(t)))
 
         # --- 4. production plan ------------------------------------------
@@ -194,8 +206,10 @@ class PepoAgent(BaseAgent):
         # --- 5. bids --------------------------------------------------------
         for good in lots:
             requested = self.last_bids.get(good, 0)
-            prem = self.premium.get(good, p["bid_premium"])
-            if requested > 0 and won.get(good, 0) < requested:
+            prem = self.premium.get(good, p["start_premium"])
+            if good not in self.premium:
+                pass  # first time we see this material: use start_premium as is
+            elif requested > 0 and won.get(good, 0) < requested:
                 prem = min(p["premium_cap"], prem + p["premium_up"])
             else:
                 prem = p["bid_premium"] + (prem - p["bid_premium"]) * p["premium_decay"]

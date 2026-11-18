@@ -1,0 +1,112 @@
+{
+ "rotating_forks": [
+  "pepo_agent",
+  {}
+ ],
+ "pepo": [
+  "pepo_baseline",
+  {}
+ ],
+ "6767": [
+  "starter",
+  {}
+ ],
+ "tight": [
+  "starter",
+  {}
+ ],
+ "2813": [
+  "starter",
+  {}
+ ],
+ "jackpots": [
+  "starter",
+  {}
+ ],
+ "bravhum": [
+  "starter",
+  {}
+ ],
+ "coderats": [
+  "starter",
+  {}
+ ],
+ "swarmers": [
+  "starter",
+  {}
+ ],
+ "dragonware": [
+  "starter",
+  {}
+ ],
+ "valueforge": [
+  "starter",
+  {}
+ ],
+ "scimmieinborsa": [
+  "starter",
+  {}
+ ],
+ "uvebeen": [
+  "starter",
+  {}
+ ],
+ "sevenstars": [
+  "starter",
+  {}
+ ],
+ "socratis": [
+  "starter",
+  {}
+ ],
+ "buy_high_sell_low": [
+  "starter",
+  {}
+ ],
+ "profezia": [
+  "ProfezIA",
+  {}
+ ],
+ "80085": [
+  "PolimiAgent",
+  {}
+ ],
+ "thealtruisticagent": [
+  "PatientAgent",
+  {}
+ ],
+ "DummyAgent": [
+  "DummyAgent",
+  {}
+ ],
+ "PatientAgent": [
+  "PatientAgent",
+  {}
+ ],
+ "PriceWarAgent": [
+  "PriceWarAgent",
+  {}
+ ],
+ "proxy_rnd": [
+  "pepo_agent",
+  {
+   "start_premium": 1.0,
+   "init_markup": 6.0,
+   "target_min": 8
+  }
+ ],
+ "proxy_vibe": [
+  "pepo_agent",
+  {
+   "split_listings": false
+  }
+ ],
+ "proxy_trucco": [
+  "pepo_agent",
+  {
+   "init_markup": 3.0,
+   "bid_premium": 0.5,
+   "target_min": 6
+  }
+ ]
+}
