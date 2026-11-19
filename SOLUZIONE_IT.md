@@ -63,7 +63,7 @@ quelli che hanno meno soldi.
 
 Abbiamo già un progetto (`bizagent`) scritto prima di conoscere le regole. Ora
 che le regole sono note, costruiamo un agente **su misura** per questo gioco
-(`pepo_agent`), riusando le idee migliori di `bizagent`.
+(`444_agent`), riusando le idee migliori di `bizagent`.
 
 Ogni turno l'agente fa così:
 
@@ -137,7 +137,7 @@ uv run python tools/league.py --roster crowded --seeds 10
 
 | Agente | Posizione media | Vittorie | Cassa media |
 |---|---|---|---|
-| **pepo_agent** | **1,00** | **120 / 120** | 140.973 |
+| **444_agent** | **1,00** | **120 / 120** | 140.973 |
 | DummyAgent | 2,04 | 0 | 18.644 |
 | PatientAgent | 3,33 | 0 | 14.250 |
 | PriceWarAgent | 3,62 | 0 | 11.911 |
@@ -146,7 +146,7 @@ uv run python tools/league.py --roster crowded --seeds 10
 
 | Agente | Posizione media | Vittorie | Cassa media |
 |---|---|---|---|
-| **pepo_agent** (finale) | **1,07** | **112 / 120** | 60.500 |
+| **444_agent** (finale) | **1,07** | **112 / 120** | 60.500 |
 | pepo_v1 (prima versione) | 2,29 | 7 | 28.563 |
 | pepo_single (senza offerte separate) | 2,89 | 1 | 25.092 |
 | pepo_baseline / copia | ~4,6 | 0 | ~14.700 |
@@ -159,6 +159,93 @@ deboli sono "materiali costosi" (posizione media 1,70) e "materiali scarsi"
 
 Tempo di decisione: circa **0,2 millisecondi** per turno (il limite è 100).
 
+**Aggiornamento competitivo finale.** Il modello ora considera anche lo stock
+pubblico dei prodotti e la pressione sulle materie prime. Su una verifica nuova
+di 96 partite contro i bot ufficiali distribuite sui 12 mercati disponibili,
+`444_agent` ha ottenuto posizione media 1,00 su tutti i 96. Su 96 partite in
+mercato affollato, ha ottenuto posizione media **1,05**, con 91 vittorie. Nel
+mercato con materiali costosi ha pareggiato la prima posizione con `pepo_v1`
+(1,50 ciascuno), migliorando nettamente il punto più debole della versione
+precedente.
+
+**Contromossa contro bot speculari.** La lega speculare include sei agenti
+plausibili sviluppati nello stesso stile:
+
+- ladder bilanciata, conservativa e aggressiva;
+- stock ottimizzato per mercati brevi;
+- stock ottimizzato per mercati lunghi;
+- sniper d'asta e ladder.
+
+Su 60 partite tra i mirror più rappresentativi, il profilo `counter_sniper`
+ha ottenuto posizione media **1,35** con 39 vittorie, contro 2,22 e 16 vittorie
+per `mirror_sniper`. Il default finale combina stock compatto, ladder ampia,
+offerta d'asta al 45% sopra riserva e budget d'acquisto del 90%. Questo profilo
+ha mantenuto posizione media 1,00 contro 60 test ufficiali su mercati brevi,
+lunghi, standard, costosi e scarsi, oltre a vincere nei roster aggressivi e
+passivi testati.
+
+**Adattamento a mercati da 15, 80 e 240 turni.** Sono stati aggiunti scenari
+ultralunghi e sei bot con strategie non copiate dalla baseline:
+
+- undercut continuo;
+- accumulo aggressivo di scorte;
+- controllo del CHIP;
+- conservazione di liquidità;
+- adattamento ai capitali pubblici;
+- profilo maturo oltre il turno 80.
+
+L'agente rileva quattro regimi osservabili: mercato costoso, mercato con offerta
+scarsa, mercato maturo oltre il turno 80 e mercato normale. Nei mercati costosi
+abbassa markup iniziale e pavimento, usa una ladder sotto-costo e riduce lo
+stock; nei mercati scarsamente riforniti mantiene copertura moderata; oltre il
+turno 80 usa scorte alte, ladder stabile e aste moderate.
+
+In 20 partite da 240 turni contro stockpile e bot speculari, `444_agent` ha
+ottenuto 11 vittorie e posizione media 1,45, contro stockpile 9 vittorie e
+posizione media 1,55. Contro i bot ufficiali ha vinto 48/48 su ultralong,
+costoso, scarso e capacità.
+
+**Aggiornamento basato su Tight v7.** Il bot vincente usa quattro leve che
+mancavano alla nostra implementazione precedente:
+
+- **stock dinamico per vendite previste:** copertura di circa 3 turni, non un
+  target fisso.
+- **bid cap adattivo:** cresce solo quando abbiamo perso materiali all'asta e
+  vendiamo quasi tutto; si restringe quando lo stock finito accumula.
+- **cap per valore:** nessun materiale viene pagato oltre una quota del valore
+  dei prodotti migliori che può creare.
+- **lettura pubblica della concorrenza:** i beni non offerti dai rivali ricevono
+  una ladder più alta e i materiali scarsi vengono assegnati ai beni meno
+  presenti nei mercati avversari.
+
+Il modello attuale usa un regime aggressivo nei mercati normali, lunghi e con
+offerta scarsa, e passa a un profilo conservativo nei mercati con riserve
+materiali costose. Su 120 partite tra mercati standard, brevi, lunghi, costosi,
+scarsi e con capacità limitata, `444_agent` ha ottenuto posizione media **2,38**
+e 57 vittorie. A 240 turni ha ottenuto 7 vittorie su 12 e posizione media
+**1,42**, superando Tight aggressivo con 5 vittorie e posizione media 1,75.
+
+**Ottimizzazione dei mercati da pochi turni.** Sono state confrontate 12
+versioni Tight su mercati da 15 turni e sui tutorial. Nei mercati normali il
+profilo migliore disattiva l'apertura aggressiva, tiene stock minimo 1,
+copertura di 1.5 turni, massimo 24 pezzi finiti e bid cap 4x riserva.
+
+Su 20 partite da 15 turni:
+
+- `444_agent`: posizione media **1,15**, 18 vittorie
+- `tight`: posizione media 3,20
+- `tight_conservative`: 3,60
+- `tight_v6`: 3,85
+
+**Limite dell'aggressione estrema.** Nelle due configurazioni principali da
+40 e 80 turni abbiamo testato profili all-in con markup 2,5–2,8x, stock fino
+a 60 unità e aste fino al 100% della cassa. Questi profili hanno rapidamente
+collassato sul capitale. Il modello vincente usa aggressione moderata:
+markup iniziale normalizzato nel mercato, stock controllato e reinvestimento
+limitato all'80% nei mercati costosi. Su 60 partite da 40/80/costoso il profilo
+base ha vinto 40/60; nel costoso il contesto conserva invece il vantaggio agli
+agenti liquidi e undercutter.
+
 **Attenzione — cosa questi numeri NON dicono:** gli avversari veri sono le
 altre squadre, non i nostri bot. Agenti molto diversi dai nostri potrebbero
 comportarsi in modo che non abbiamo previsto. Inoltre il repository è pubblico:
@@ -166,8 +253,8 @@ le altre squadre possono vedere il nostro codice.
 
 ## 8. Consegna
 
-Il file pronto da caricare è **`submission/pepo_agent.zip`** (contiene solo
-`pepo_agent/agent.py`, 4 KB). Lo abbiamo già verificato come farebbe il portale:
+Il file pronto da caricare è **`submission/444_agent.zip`** (contiene solo
+`444_agent/agent.py`, 4 KB). Lo abbiamo già verificato come farebbe il portale:
 compila, si carica da una cartella separata e gioca senza errori.
 
 Paracadute: se per qualche motivo il portale lo rifiuta, caricare la cartella
@@ -177,9 +264,9 @@ Paracadute: se per qualche motivo il portale lo rifiuta, caricare la cartella
 
 | Percorso | Cosa contiene |
 |---|---|
-| `src/dme_simulator/agents/pepo_agent/` | **Il nostro agente** (quello da consegnare) |
+| `src/dme_simulator/agents/444_agent/` | **Il nostro agente** (quello da consegnare) |
 | `src/dme_simulator/agents/pepo_baseline/` | Agente semplice di riserva |
-| `submission/pepo_agent.zip` | File pronto da caricare sul portale |
+| `submission/444_agent.zip` | File pronto da caricare sul portale |
 | `tools/` | Test: `league.py` (classifica), `evolve.py` (ricerca parametri), `scenarios/` (mercati di prova), `results/` |
 | `legacy/bizagent/` | Il vecchio progetto scritto prima di conoscere le regole. **Non serve per la gara**, lo teniamo solo come riferimento |
 | tutto il resto | Il simulatore ufficiale degli organizzatori (da non modificare) |
